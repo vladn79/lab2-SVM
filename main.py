@@ -89,9 +89,45 @@ def generate_data(N, random_state=42):
     Y[Y == 0] = -1
     return X, Y
 
-def main():
+def manual_input():
     N = int(input("Enter number of data points: "))
-    X, Y = generate_data(N)
+    X = []
+    Y = []
+    for i in range(N):
+        x1, x2 = map(float, input(f"Enter coordinates for data point {i+1} (x1 x2): ").split())
+        label = int(input(f"Enter class label for data point {i+1} (-1 or 1): "))
+        X.append([x1, x2])
+        Y.append(label)
+    return np.array(X), np.array(Y)
+
+def file_input(filename):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        N = int(lines[0])
+        X = []
+        Y = []
+        for line in lines[1:]:
+            data = line.strip().split()
+            x1, x2 = map(float, data[:2])
+            label = int(data[2])
+            X.append([x1, x2])
+            Y.append(label)
+    return np.array(X), np.array(Y)
+
+
+def main():
+    input_method = input("Choose input method (manual / file / random): ").strip().lower()
+    if input_method == 'manual':
+        X, Y = manual_input()
+    elif input_method == 'file':
+        filename = input("Enter filename: ").strip()
+        X, Y = file_input(filename)
+    elif input_method == 'random':
+        N = int(input("Enter number of data points: "))
+        X, Y = generate_data(N)
+    else:
+        print("Invalid input method selected.")
+        return
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     
